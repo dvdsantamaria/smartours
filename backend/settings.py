@@ -107,11 +107,10 @@ USE_TZ = True
 
 # CORS configuration
 CORS_ALLOWED_ORIGINS = [
-    'http://localhost:3000',
+    'http://localhost:3001',  # Puerto de Vite
 ]
 
-# CSRF Token handling
-CSRF_TRUSTED_ORIGINS = ['http://localhost:3000']
+CSRF_TRUSTED_ORIGINS = ['http://localhost:3001']
 
 # Environment variable settings
 load_dotenv()
@@ -129,32 +128,50 @@ STATIC_URL = 'static/'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # Logging configuration
+
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
     'formatters': {
         'verbose': {
-            'format': '{levelname} {asctime} {module} {message}',
-            'style': '{',
-        },
-        'simple': {
-            'format': '{levelname} {message}',
+            'format': '{levelname} {asctime} [VIEW] {message}',
             'style': '{',
         },
     },
     'handlers': {
-        'file': {
-            'level': 'DEBUG',
+        # Handler para el backend
+        'file_backend': {
+            'level': 'ERROR',
             'class': 'logging.FileHandler',
-            'filename': os.path.join(BASE_DIR, 'logs/code_execution_log.txt'),
+            'filename': os.path.join(BASE_DIR, 'logs/backend_execution_log.txt'),
+            'formatter': 'verbose',
+        },
+        # Handler para el frontend
+        'file_frontend': {
+            'level': 'ERROR',
+            'class': 'logging.FileHandler',
+            'filename': os.path.join(BASE_DIR, 'logs/frontend_execution_log.txt'),
+            'formatter': 'verbose',
+        },
+        # Handler para mostrar errores en la consola
+        'console': {
+            'level': 'ERROR',
+            'class': 'logging.StreamHandler',
             'formatter': 'verbose',
         },
     },
     'loggers': {
+        # Logger para el backend
         'django': {
-            'handlers': ['file'],
-            'level': 'DEBUG',
+            'handlers': ['file_backend', 'console'],
+            'level': 'ERROR',
             'propagate': True,
+        },
+        # Logger para el frontend
+        'frontend': {
+            'handlers': ['file_frontend'],
+            'level': 'ERROR',
+            'propagate': False,
         },
     },
 }
